@@ -81,27 +81,25 @@ public class AppComponent {
 
             // Stop processing if the packet has already been handled.
             // Nothing much more can be done.
-            if(packetContext.isHandled()){
-                return;
-            }
+            if (packetContext.isHandled()) return;
 
             InboundPacket inboundPacket = packetContext.inPacket();
             Ethernet ethernetPacket = inboundPacket.parsed();
 
-            if(isControlPacket(ethernetPacket)) return;
+            // Ignore control packets
+            if (isControlPacket(ethernetPacket)) return;
 
             log.info("Packet received from device -> " + inboundPacket.receivedFrom().deviceId() +
                     " port number -> " + inboundPacket.receivedFrom().port().toString());
 
-
-            switch(EthType.EtherType.lookup(ethernetPacket.getEtherType())){
+            switch (EthType.EtherType.lookup(ethernetPacket.getEtherType())) {
                 case ARP:
                     log.info("ARP packet received!");
                     ARP arpPacket = (ARP) ethernetPacket.getPayload();
                     Ip4Address targetIpAddress = Ip4Address.valueOf(arpPacket.getTargetProtocolAddress());
 
                     // Generate fake ARP reply with fake MAC
-                    byte [] tempMac = {22,22,22,22,22,22};
+                    byte[] tempMac = {12, 34, 56, 78, 90, 12};
                     MacAddress macAddress = new MacAddress(tempMac);
                     Ethernet ethernet = ARP.buildArpReply(targetIpAddress, macAddress, ethernetPacket);
 
@@ -123,7 +121,7 @@ public class AppComponent {
                             .getIp4Address().toString());
 
                     // Generate fake ICMP reply
-                    if(ipv4Packet.getProtocol() == IPv4.PROTOCOL_ICMP){
+                    if (ipv4Packet.getProtocol() == IPv4.PROTOCOL_ICMP) {
                         log.info("Ping detected! ");
 
                         // ICMP
