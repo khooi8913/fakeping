@@ -48,7 +48,7 @@ public class AppComponent {
 
     @Activate
     protected void activate() {
-        appId = coreService.registerApplication("org.foo.app");
+        appId = coreService.registerApplication("org.xzk.fakeping");
         packetService.addProcessor(packetChecker, PacketProcessor.director(2));
         requestIntercepts();
         log.info("Started", appId.id());
